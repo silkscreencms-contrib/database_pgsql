@@ -1,0 +1,10 @@
+name = PostgreSQL Database Driver
+description = Enable the use of PostgreSQL databases
+
+database_driver = pgsql
+
+database_backend[DatabaseConnection_pgsql] = database.inc
+database_backend[DatabaseTasks_pgsql] = install.inc
+database_backend[InsertQuery_pgsql] = query.inc
+database_backend[TruncateQuery_pgsql] = query.inc
+database_backend[DatabaseSchema_pgsql] = schema.inc
