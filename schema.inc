@@ -295,6 +295,10 @@ class DatabaseSchema_pgsql extends DatabaseSchema {
       'serial:medium' => 'serial',
       'serial:big' => 'bigserial',
       'serial:normal' => 'serial',
+
+      'date:normal' => 'date',
+      'datetime:normal' => 'timestamp',
+      'time:normal' => 'time',
       );
     return $map;
   }
