@@ -8,3 +8,4 @@ database_backend[DatabaseTasks_pgsql] = install.inc
 database_backend[InsertQuery_pgsql] = query.inc
 database_backend[TruncateQuery_pgsql] = query.inc
 database_backend[DatabaseSchema_pgsql] = schema.inc
+database_backend[SelectQuery_pgsql] = select.inc
