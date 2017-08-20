@@ -24,6 +24,20 @@ class DatabaseSchema_pgsql extends DatabaseSchema {
   protected $tableInformation = array();
 
   /**
+   * Create names for indexes, primary keys and constraints.
+   *
+   * This prevents using {} around non-table names like indexes and keys.
+   */
+  public function prefixNonTable($table) {
+    $table_name = call_user_func_array(array('parent', 'prefixNonTable'), func_get_args());
+    $prefix = $this->connection->tablePrefix($table);
+    if (strlen($table_name) > 63) {
+      $table_name = $prefix . md5($table_name);
+    }
+    return $table_name;
+  }
+
+  /**
    * Fetch the list of blobs and sequences used on a table.
    *
    * We introspect the database to collect the information required by insert
