@@ -231,6 +231,10 @@ class DatabaseConnection_pgsql extends DatabaseConnection {
   public function utf8mb4IsSupported() {
     return TRUE;
   }
+
+  public function setSessionTimezoneOffset($offset) {
+    $this->query("SET TIME ZONE INTERVAL :offset HOUR TO MINUTE", array(':offset' => $offset));
+  }
 }
 
 /**
