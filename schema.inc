@@ -176,6 +176,13 @@ class DatabaseSchema_pgsql extends DatabaseSchema {
     return $statements;
   }
 
+  protected function cloneTableSql($source, $target) {
+    $statements[] = "SELECT f_copy_tbl('$source', '$target')";
+    $statements[] = 'INSERT INTO ' . $target . ' SELECT * FROM ' . $source;
+
+    return $statements;
+  }
+
   /**
    * Create an SQL string for a field to be used in table creation or
    * alteration.
