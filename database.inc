@@ -171,6 +171,10 @@ class DatabaseConnection_pgsql extends DatabaseConnection {
         // statements, we need to use ILIKE instead.
         'LIKE' => array('operator' => 'ILIKE'),
         'NOT LIKE' => array('operator' => 'NOT ILIKE'),
+        'REGEXP' => array('operator' => '~*'),
+        'NOT REGEXP' => array('operator' => '!~*'),
+        'REGEXP BINARY' => array('operator' => '~'),
+        'NOT REGEXP BINARY' => array('operator' => '!~'),
       );
     }
 
