@@ -235,6 +235,99 @@ class DatabaseConnection_pgsql extends DatabaseConnection {
   public function setSessionTimezoneOffset($offset) {
     $this->query("SET TIME ZONE INTERVAL :offset HOUR TO MINUTE", array(':offset' => $offset));
   }
+
+  public function hasTimezoneSupport() {
+    $test = db_query("SELECT '2008-02-15 12:00:00 UTC' AT TIME ZONE 'US/Central'")->fetchField();
+    return ($test == '2008-02-15 06:00:00');
+  }
+
+  public function dateFieldSql($date_type, $field) {
+    switch ($date_type) {
+      case DATE_UNIX:
+        $field = "TO_TIMESTAMP($field)";
+        break;
+
+      case DATE_ISO:
+        $field = "STR_TO_DATE($field, '%Y-%m-%dT%T')";
+        break;
+
+      case DATE_DATETIME:
+        break;
+    }
+
+    return $field;
+  }
+
+  public function dateMathSql($field, $dirction, $count, $granularity) {
+    $granularity = strtoupper($granularity) . 'S';
+    switch ($direction) {
+      case 'ADD':
+        return "($field + INTERVAL '$count $granularity')";
+
+      case 'SUB':
+        return "($field + INTERVAL '$count $granularity')";
+    }
+    return $field;
+  }
+
+  public function dateFormatSql($format, $field) {
+    $replace = array(
+      'Y' => 'YYYY',
+      'y' => 'YY',
+      'M' => 'Mon',
+      'm' => 'MM',
+      'n' => 'MM', // no format for Numeric representation of a month, without leading zeros
+      'F' => 'Month',
+      'D' => 'Dy',
+      'd' => 'DD',
+      'l' => 'Day',
+      'j' => 'DD', // no format for Day of the month without leading zeros
+      'W' => 'WW',
+      'H' => 'HH24',
+      'h' => 'HH12',
+      'i' => 'MI',
+      's' => 'SS',
+      'A' => 'AM',
+    );
+    $format = strtr($format, $replace);
+    return "TO_CHAR(TIMESTAMP '1970-01-01' + $field * INTERVAL '1 SECONDS', '$format')";
+  }
+
+  public function dateExtractSql($extract_type, $field) {
+    // Note there is no space after FROM to avoid db_rewrite problems
+    // see http://drupal.org/node/79904.
+    switch (strtoupper($extract_type)) {
+      case 'DATE':
+        return $field;
+      case 'YEAR':
+        return "EXTRACT(YEAR FROM($field))";
+      case 'MONTH':
+        return "EXTRACT(MONTH FROM($field))";
+      case 'DAY':
+        return "EXTRACT(DAY FROM($field))";
+      case 'HOUR':
+        return "EXTRACT(HOUR FROM($field))";
+      case 'MINUTE':
+        return "EXTRACT(MINUTE FROM($field))";
+      case 'SECOND':
+        return "EXTRACT(SECOND FROM($field))";
+
+      // ISO week number for date.
+      case 'WEEK':
+        return "EXTRACT(WEEK FROM($field))";
+      case 'DOW':
+        return "EXTRACT(DOW FROM($field))";
+      case 'DOY':
+        return "EXTRACT(DOY FROM($field))";
+    }
+
+    // An unknown function.
+    return FALSE;
+  }
+
+  public function dateConvertTimezoneSql($field, $source, $target) {
+    return "$field AT TIMEZONE '$target'";
+  }
 }
 
 /**
