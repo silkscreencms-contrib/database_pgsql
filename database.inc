@@ -241,8 +241,10 @@ class DatabaseConnection_pgsql extends DatabaseConnection {
     return ($test == '2008-02-15 06:00:00');
   }
 
-  public function dateFieldSql($date_type, $field) {
-    switch ($date_type) {
+  public function dateFieldSql($field, $field_type = DATE_UNIX) {
+    switch ($field_type) {
+      case 'int':
+        watchdog('database', 'Date field type "int" has been deprecated, use DATE_UNIX instead.', array(), WATCHDOG_DEPRECATED);
       case DATE_UNIX:
         $field = "TO_TIMESTAMP($field)";
         break;
@@ -258,19 +260,19 @@ class DatabaseConnection_pgsql extends DatabaseConnection {
     return $field;
   }
 
-  public function dateMathSql($field, $dirction, $count, $granularity) {
+  public function dateMathSql($field, $direction, $count, $granularity) {
     $granularity = strtoupper($granularity) . 'S';
     switch ($direction) {
       case 'ADD':
         return "($field + INTERVAL '$count $granularity')";
 
       case 'SUB':
-        return "($field + INTERVAL '$count $granularity')";
+        return "($field - INTERVAL '$count $granularity')";
     }
     return $field;
   }
 
-  public function dateFormatSql($format, $field) {
+  public function dateFormatSql($field, $format) {
     $replace = array(
       'Y' => 'YYYY',
       'y' => 'YY',
@@ -290,10 +292,10 @@ class DatabaseConnection_pgsql extends DatabaseConnection {
       'A' => 'AM',
     );
     $format = strtr($format, $replace);
-    return "TO_CHAR(TIMESTAMP '1970-01-01' + $field * INTERVAL '1 SECONDS', '$format')";
+    return "TO_CHAR($field, '$format')";
   }
 
-  public function dateExtractSql($extract_type, $field) {
+  public function dateExtractSql($field, $extract_type) {
     // Note there is no space after FROM to avoid db_rewrite problems
     // see http://drupal.org/node/79904.
     switch (strtoupper($extract_type)) {
