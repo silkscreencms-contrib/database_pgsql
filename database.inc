@@ -161,6 +161,18 @@ class DatabaseConnection_pgsql extends DatabaseConnection {
     return 'pgsql';
   }
 
+  /**
+   * Overrides DatabaseConnection::createDatabase().
+   *
+   * @param string $database
+   *   The name of the database to create.databaseType
+   *
+   * @throws DatabaseNotFoundException
+   */
+  public function createDatabase($database) {
+    throw new DatabaseOperationNotSupported('Unsupported operation.');
+  }
+
   public function mapConditionOperator($operator) {
     static $specials;
 
