@@ -1,6 +1,6 @@
 name = PostgreSQL Database Driver
 description = Enable the use of PostgreSQL databases
-version = 1.8
+version = 1.10.0
 
 database_driver = pgsql
 
