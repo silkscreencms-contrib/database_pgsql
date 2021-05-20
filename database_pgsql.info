@@ -3,6 +3,7 @@ description = Enable the use of PostgreSQL databases
 version = 1.10.0
 
 database_driver = pgsql
+type = driver
 
 database_backend[DatabaseConnection_pgsql] = database.inc
 database_backend[DatabaseTasks_pgsql] = install.inc
