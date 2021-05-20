@@ -65,12 +65,17 @@ class DatabaseConnection_pgsql extends DatabaseConnection {
     );
     parent::__construct($dsn, $connection_options['username'], $connection_options['password'], $connection_options['pdo']);
 
+    // Fallback to pointing to ourselves if we're running in Backdrop < 1.19.0.
+    if (empty($this->pdo)) {
+      $this->pdo = $this;
+    }
+
     // Force PostgreSQL to use the UTF-8 character set by default.
-    $this->exec("SET NAMES 'UTF8'");
+    $this->pdo->exec("SET NAMES 'UTF8'");
 
     // Execute PostgreSQL init_commands.
     if (isset($connection_options['init_commands'])) {
-      $this->exec(implode('; ', $connection_options['init_commands']));
+      $this->pdo->exec(implode('; ', $connection_options['init_commands']));
     }
   }
 
@@ -120,7 +125,7 @@ class DatabaseConnection_pgsql extends DatabaseConnection {
         case Database::RETURN_AFFECTED:
           return $stmt->rowCount();
         case Database::RETURN_INSERT_ID:
-          return $this->lastInsertId($options['sequence_name']);
+          return $this->pdo->lastInsertId($options['sequence_name']);
         case Database::RETURN_NULL:
           return;
         default:
