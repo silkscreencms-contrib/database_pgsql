@@ -89,7 +89,7 @@ class DatabaseConnection_pgsql extends DatabaseConnection {
     // @todo This workaround only affects bytea fields, but the involved field
     //   types involved in the query are unknown, so there is no way to
     //   conditionally execute this for affected queries only.
-    $query = stripos($query, 'where') ? preg_replace('/\b([^ ]+(\(.*\))?) +(I*LIKE|NOT +I*LIKE) /iU', ' ${1}::text ${3} ', $query) : $query;
+    $query = stripos($query, 'where') ? preg_replace('/\b:?([^ ]+(\(.*\))?) +(I*LIKE|NOT +I*LIKE) /iU', '${1}::text ${3} ', $query) : $query;
     return parent::prepareQuery($query);
   }
 
